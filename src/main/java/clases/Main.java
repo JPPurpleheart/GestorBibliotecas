@@ -48,7 +48,7 @@ public class Main {
 				break;
 			case 6:
 				//TODO Guardar el Catalogo de Libros en un Fichero de Texto
-				crearFicheros(catalogo);
+				guardarFicheros(catalogo);
 				break;
 			case 7:
 				//TODO Leer el Catalogo de Libros en un Fichero de Texto
@@ -189,8 +189,10 @@ public class Main {
 
 	private static void baja(ArrayList<Libro> catalogo) {
 		System.out.println("¿Que libro quieres que borre?");
-		int indice = teclado.nextInt();
-		catalogo.remove(indice);
+		int indice = teclado.nextInt() - 1;
+		if(Libro.comprobarBaja(indice, catalogo.size())) {
+			catalogo.remove(indice);
+    	}
 	}
 
 	private static void busqueda(ArrayList<Libro> catalogo) {
@@ -202,6 +204,7 @@ public class Main {
 			System.out.println("Libro no encontrado, introduce un ISBN valido");
 			isbnabuscar = teclado.next();
 		} else {
+			System.out.println(catalogo.get(indice));
 			System.out.println(catalogo.get(indice).getTitulo());
 			System.out.println(catalogo.get(indice).getIsbn());
 			System.out.println(catalogo.get(indice).getGenero());
@@ -219,59 +222,50 @@ public class Main {
 		int opcion = teclado.nextInt();
 		if(opcion == 1) {
 			//Ordenación Natural por Título
-			Collections.sort(catalogo);
+			ArrayList<Libro> catalogo_ordenado = (ArrayList<Libro>) catalogo.clone();
+			Collections.sort(catalogo_ordenado);
+			lista(catalogo_ordenado);
 		} else if(opcion == 2) {
 			//Ordenación por Nº de Páginas
-			Collections.sort(catalogo, new Libro());
+			ArrayList<Libro> catalogo_ordenado = (ArrayList<Libro>) catalogo.clone();
+			Collections.sort(catalogo_ordenado, new Libro());
+			lista(catalogo_ordenado);
 		} else {
 			System.out.println("Ordenamiento Desconocido");
 		}
+		//Hola:987654321:NOVELA:Pepito:100
+		//Adios:098765432:POESIA:Bollito:200
+		//Ktal:123456789:FICCION:Vienita:300
 	}
 
-	private static void crearFicheros(ArrayList<Libro> catalogo) {
+	private static void guardarFicheros(ArrayList<Libro> catalogo) {
 		System.out.println("Introduzca nombre del fichero a guardar");
     	Scanner teclado = new Scanner(System.in);
     	String nombref = teclado.nextLine();
-    	File catalogodeLibros = new File(nombref);
+    	File catalogodeLibros = new File(System.getProperty("user.dir") + nombref);
 		try {
 			if (catalogodeLibros.createNewFile()) {
 		        System.out.println("Archivo creado: " + catalogodeLibros.getName());
-		        guardarFicheros(catalogo, catalogodeLibros);
+		        FileWriter escribir = new FileWriter(catalogodeLibros);
+				for (Libro libro : catalogo) {
+					if(validaDatos(libro.toString() + "\n"))
+						escribir.write(libro.toString() + "\n");
+					else
+						System.out.println("Ocurrio un error al validar el libro");
+				}
 		      } else {
 		        System.out.println("Archivo ya existente.");
-		        guardarFicheros(catalogo, catalogodeLibros);
+		        FileWriter escribir = new FileWriter(catalogodeLibros);
+				for (Libro libro : catalogo) {
+					if(validaDatos(libro.toString() + "\n"))
+						escribir.write(libro.toString() + "\n");
+					else
+						System.out.println("Ocurrio un error al validar el libro");
+				}
 		      }
 		} catch (IOException e) {
 			System.out.println("Ocurrio un Error al crear el archivo");
 			e.printStackTrace();
-		}		
-	}
-
-	private static void guardarFicheros(ArrayList<Libro> catalogo, File catalogodeLibros) throws IOException {
-		FileWriter salida = new FileWriter(catalogodeLibros);
-		for(int j = 0; j < catalogo.size(); j ++) {
-		    salida.write(catalogo.get(j).getTitulo());
-		    salida.write(",");
-		    salida.write(catalogo.get(j).getIsbn());
-		    salida.write(",");
-		    Genero genero = catalogo.get(j).getGenero();
-		    if (genero == Genero.FICCION) {
-		    	String generostr = Genero.FICCION.name();
-		    	salida.write(generostr);
-		    } else if (genero == Genero.NOVELA) {
-		    	String generostr = Genero.NOVELA.name();
-		    	salida.write(generostr);
-		    } else if (genero == Genero.POESIA) {
-		    	String generostr = Genero.POESIA.name();
-		    	salida.write(generostr);
-		    } else {
-		    	System.out.println("El genero especificado no existe o no esta disponible como opcion");
-		    }
-		    salida.write(",");
-		    salida.write(catalogo.get(j).getAutor());
-		    salida.write(",");
-		    salida.write(catalogo.get(j).getPaginas());			   
-			salida.close();
 		}
 	}
 
@@ -280,37 +274,40 @@ public class Main {
 		System.out.println("Introduzca nombre del fichero a cargar");
     	Scanner teclado = new Scanner(System.in);
     	String nombref = teclado.nextLine();
-		File catalogodeLibros = new File(nombref);
-	    Scanner myReader;
-		try {
-			myReader = new Scanner(catalogodeLibros);
-			while (myReader.hasNextLine()) {
-				String line = myReader.next();
-				String[] datos = line.split(",");
-				String titulo = datos[0];
-		    	String isbn = datos[1];
-			    Genero genero = Genero.getGenero(datos[2]);
-			    String autor = datos[3];
-			    Integer paginas = Integer.parseInt(datos[4]);
-			    libro = new Libro(titulo,isbn,genero,autor,paginas);
-				catalogo.add(libro);
-				myReader.close();
+    	Scanner myReader = null;
+		try{
+			File catalogodeLibros = new File(System.getProperty("user.dir") + nombref);
+			try {
+				myReader = new Scanner(catalogodeLibros);
+				while (myReader.hasNextLine()) {
+					String line = myReader.next();
+					String[] datos = line.split(",");
+					String titulo = datos[0];
+			    	String isbn = datos[1];
+				    Genero genero = Genero.getGenero(datos[2]);
+				    String autor = datos[3];
+				    Integer paginas = Integer.parseInt(datos[4]);
+				    libro = new Libro(titulo,isbn,genero,autor,paginas);
+					catalogo.add(libro);
+					myReader.close();
+				}
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
 			}
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} catch (Exception ex) {
+			System.out.println("Error: el fichero no se ha encontrado" + ex.getMessage());
+		} finally {
+    		try {
+    			if (myReader != null)
+    				myReader.close();
+    		} catch (Exception exception) {
+    			System.out.println("Mensaje 2: " + exception.getMessage());
+    		}
+    	}
 	}
 
-	private static void vaciarCatalogo(ArrayList<Libro> catalogo) {
-    	System.out.println("Introduzca nombre del fichero a eliminar");
-    	Scanner teclado = new Scanner(System.in);
-    	String nombref = teclado.nextLine();
-		File catalogodeLibros = new File(nombref); 
-	    if (catalogodeLibros.delete()) { 
-	      System.out.println("Borrar el catalogo: " + catalogodeLibros.getName());
-	    } else {
-	      System.out.println("Ocurrio un error al borrar el catalogo.");
-	    } 
+	private static void vaciarCatalogo(ArrayList<Libro> catalogo) { 
+		System.out.println("Borrar el catalogo");
+		catalogo.clear();
 	}
 }

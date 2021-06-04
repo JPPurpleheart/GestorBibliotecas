@@ -98,6 +98,23 @@ public class Libro implements Comparable<Libro>, Comparator<Libro> {
 	public void setPaginas(Integer paginas) {
 		this.paginas = paginas;
 	}
+
+	public static boolean comprobarBaja(int indice, int size) {
+		boolean retorno = false;
+		if (indice >= 0 && indice <= (size + 1)) {
+			System.out.println("Libro eliminado correctamente");
+			retorno = true;
+		} else {
+			System.out.println("No se ha encontrado el número del libro");
+	    }
+		return retorno;
+	}
+	
+	@Override
+	public String toString() {
+		return titulo + "," + isbn + "," + genero + "," + autor + "," + paginas;
+		
+	}
 	
 	@Override
 	public boolean equals(Object libro) {
