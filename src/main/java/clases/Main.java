@@ -19,11 +19,14 @@ public class Main {
 	
     public static void main (String [] args) {
     	System.out.println("Hola Mundo");
-    	
+    	//Creo el catalogo
     	ArrayList<Libro> catalogo = new ArrayList<Libro>();
     	
     	while(true) {
+    		//Llamo al menu para obtener la opcion del programa a realizar
     		int opcion = menu();
+    		//Utilizo un switch para poder llamar a cada metodo que realiza las funcionalidades
+    		//del programa en funcion de la opcion obtenida del menu
     		switch (opcion) {
 			case 1:
 				//TODO Alta de Libro
@@ -66,7 +69,7 @@ public class Main {
 
 	private static int menu() {
 		int opcion=0;
-    	
+		//Muestro por consola las opciones de nuestro programa mientras la opcion no sea mayor que 0
     	do {
     		System.out.println("Opciones:");
     		System.out.println("1. Alta de Libro");
@@ -78,24 +81,27 @@ public class Main {
     		System.out.println("7. Leer Catalogo");
     		System.out.println("8. Vaciar Catalogo");
     		System.out.println("Introduce la opcion:");
-    	
+    		//Llamo al metodo que devuelve la opcion elegida pasando
+    		//por parametro el maximo de opciones disponibles
     		opcion = leerOpcion(8);
     		
     	}while(opcion <=0);
-    	
+    	//Devuelvo la opcion a realizar
     	return opcion;
 	}
 
 	private static int leerOpcion(int max) {
 		int opcion = 0;
     	try {
+    		//Introduzco la opcion del menu para seleccionar que quieres que el programa haga
     		opcion=teclado.nextInt();
+    		//Si la opcion supera el maximo de opciones pongo la opcion a -1
     		if(opcion>max)
     			opcion=-1;
     	}catch (InputMismatchException e) {
 			System.out.println("Opcion incorrecta");
 		}
-    	
+    	//Devuelvo la opcion
     	return opcion;
 	}
 
@@ -116,94 +122,100 @@ public class Main {
     	
 		boolean validado=false;
     	while(!validado) {
+    		//Pregunto por los datos del libro
     		System.out.println("Introduce los datos de un libro.");
     		System.out.println("Usa el formato \"titulo:isbn:genero:autor:paginas\"");
     		try {
+    			//Guardo en un String el retorno del metodo leer cadena que devuelve los datos
+    			//que se pasan por consola
     			datos = leerCadena();
-    			if(validaDatos(datos))
+    			if(true)
     				validado=true;
     		}catch (InputMismatchException e) {
 				System.out.println("Datos de entrada no validos");
 			}
     	}
-    	
+    	//Devuelvo el String con los datos
     	return datos;
 	}
 
 	private static String leerCadena() {
-		String opcion = null;
+		//Creo la cadena a devolver
+		String opcion = "";
+		//Introduzco por consola la cadena con los datos del libro
         opcion=teclado.next();
+        //Imprimo por consola la cadena con los datos del libro
         System.out.println(opcion);
+        //Devuelvo la cadena con los datos del libro
     	return opcion;
-	}
-
-	private static boolean validaDatos(String datos) {
-		Boolean valido = false;
-		String TITULO_ER = "/^([A-Z]|[a-z]|\\s)+$/g";
-		String ISBN_ER = "^[0-9]{9}$";
-		String GENERO_ER = "^(novela|NOVELA|poesia|POESIA|ficcion|FICCION)$";
-		String AUTOR_ER = "/^([A-Z]|[a-z]|\\s)+$/g";
-		String PAGINAS_ER = "^[0-9]{1,10}$";
-		System.out.println("Selecciona tu opcion:" +
-							"\n" +
-							"1. Validacion de entrada de libros" +
-							"\n" +
-							"2. Validacion de entrada desde el archivo de catalogo");
-		Integer opcion = teclado.nextInt();
-		if (opcion == 1 /*&& datos.matches(TITULO_ER + ":" + ISBN_ER + ":" + GENERO_ER + ":" + AUTOR_ER + ":" + PAGINAS_ER) == true*/) {
-			valido = true;
-		} else if(opcion == 2 /*&& datos.matches(TITULO_ER + "," + ISBN_ER + "," + GENERO_ER + "," + AUTOR_ER + "," + PAGINAS_ER) == true*/) {
-			valido = true;
-		}
-		
-    	return valido;
-	}
+	}	
 
 	private static Libro procesaEntrada(String entrada) {
 		Libro libro = null;
-    	
+    	//Separo la cadena por el caracter separador y lo guardo en un array
     	String [] datos = entrada.split(":"); 
-    	
+    	//Convierto cada posicion del array al tipo de dato de los atributos de la clase libro
     	String titulo = datos[0];
     	String isbn = datos[1];
 	    Genero genero = Genero.getGenero(datos[2]);
 	    String autor = datos[3];
 	    Integer paginas = Integer.parseInt(datos[4]);
+	    //Una vez obtenido todos los datos del libro creo un libro con los datos obtenidos
 	    libro = new Libro(titulo,isbn,genero,autor,paginas);
-    	
+    	//Devuelvo el libro creado
     	return libro;
 	}
 
 	private static void lista(ArrayList<Libro> catalogo) {
+		//Recorro el catalogo de libros
 		for(int i = 0; i < catalogo.size(); i ++) {
+			//Por cada libro obtengo el indice de cada libro
 			catalogo.get(i);
+			//Imprimo un mensaje por consola con el indice
+			//de cada libro mas 1 para no empezar en 0
 			System.out.println("Libro "+ (i+1) +":");
+			//Imprimo los datos de cada libro
 			System.out.println("Titulo: " + catalogo.get(i).getTitulo());
 			System.out.println("ISBN: " + catalogo.get(i).getIsbn());
 			System.out.println("Genero: " + catalogo.get(i).getGenero());
 			System.out.println("Autor: " + catalogo.get(i).getAutor());
 			System.out.println("Paginas: " + catalogo.get(i).getPaginas());
-			System.out.println("------------·------------·------------·------------·------------");
+			//Imprimo un mensaje con una cadena para separar los libros impresos
+			System.out.println("----------------------------------------------------------------");
 		}		
 	}
 
 	private static void baja(ArrayList<Libro> catalogo) {
-		System.out.println("¿Que libro quieres que borre?");
+		//Pregunto por el libro que quiero borrar que corresponde a su indice en el catalogo
+		System.out.println("Â¿Que libro quieres que borre?");
+		//Introduzco por consola el indice del libro suponiendo que el indice no va a empezar
+		//por 0 como en los objetos de tipo ArrayList<T> sino por 1 como resultaria logico
 		int indice = teclado.nextInt() - 1;
+		//Utilizo el metodo comprobarBaja de la clase Libro para
+		//comprobar que se puede eliminar el libro
 		if(Libro.comprobarBaja(indice, catalogo.size())) {
+			//Dado que es posible la eliminacion elimino el libro del catalogo
 			catalogo.remove(indice);
     	}
 	}
 
 	private static void busqueda(ArrayList<Libro> catalogo) {
+		//Pido el isbn a buscar
 		System.out.println("Introduce un ISBN para buscar");
+		//Escribo por consola el isbn para buscar el libro
 		String isbnabuscar = teclado.next();
+		//Introduzco el isbn en un objeto Libro
 		Libro libro = new Libro(isbnabuscar);
+		//Uso el mÃ©todo indexOf para comparar el isbn del
+		//libro creado con los isbn de los libros del catalogo
 		int indice = catalogo.indexOf(libro);
+		//Si el resultado numerico del mÃ©todo indexOf sale -1 no ha encontrado el libro
 		if (indice == -1) {
+			//Vuelve a preguntarle el isbn para volver a buscar el libro
 			System.out.println("Libro no encontrado, introduce un ISBN valido");
 			isbnabuscar = teclado.next();
 		} else {
+			//Si encuentra el libro muestro el resultado y el libro encontrado por consola
 			System.out.println(catalogo.get(indice));
 			System.out.println(catalogo.get(indice).getTitulo());
 			System.out.println(catalogo.get(indice).getIsbn());
@@ -214,100 +226,103 @@ public class Main {
 	}
 
 	private static void ordenacion(ArrayList<Libro> catalogo) {
-		System.out.println("¿Cómo quieres ordenar el catálogo?"
+		System.out.println("Â¿Como quieres ordenar el catalogo?"
 				+ "\n"
 				+ "1. Orden Natural"
 				+ "\n"
-				+ "2. Orden por Nº de Páginas");
+				+ "2. Orden por No de Paginas");
 		int opcion = teclado.nextInt();
 		if(opcion == 1) {
-			//Ordenación Natural por Título
+			//Ordenacion Natural por Titulo
 			ArrayList<Libro> catalogo_ordenado = (ArrayList<Libro>) catalogo.clone();
 			Collections.sort(catalogo_ordenado);
 			lista(catalogo_ordenado);
 		} else if(opcion == 2) {
-			//Ordenación por Nº de Páginas
+			//Ordenacion por No de Paginas
 			ArrayList<Libro> catalogo_ordenado = (ArrayList<Libro>) catalogo.clone();
 			Collections.sort(catalogo_ordenado, new Libro());
 			lista(catalogo_ordenado);
 		} else {
 			System.out.println("Ordenamiento Desconocido");
 		}
-		//Hola:987654321:NOVELA:Pepito:100
-		//Adios:098765432:POESIA:Bollito:200
-		//Ktal:123456789:FICCION:Vienita:300
 	}
 
 	private static void guardarFicheros(ArrayList<Libro> catalogo) {
-		System.out.println("Introduzca nombre del fichero a guardar");
+		//Pregunto por el nombre del fichero a escribir
+		System.out.println("Introduzca nombre del fichero");
+		//Creo el Scanner para leer de consola
     	Scanner teclado = new Scanner(System.in);
+    	//Leo de consola el nombre del fichero a escribir
     	String nombref = teclado.nextLine();
-    	File catalogodeLibros = new File(System.getProperty("user.dir") + nombref);
+    	//Creo un objeto File con la direccion del fichero a escribir que estÃ¡ en la
+    	//carpeta donde se ejecuta nuestro programa / y el nombre del fichero
+    	File catalogodeLibros = new File(System.getProperty("user.dir") + "/" + nombref);    	
 		try {
+			//Si el fichero se ha creado muestro por consola un mensaje para
+			//notificar que se ha creado con el nombre del fichero creado
 			if (catalogodeLibros.createNewFile()) {
-		        System.out.println("Archivo creado: " + catalogodeLibros.getName());
-		        FileWriter escribir = new FileWriter(catalogodeLibros);
-				for (Libro libro : catalogo) {
-					if(validaDatos(libro.toString() + "\n"))
-						escribir.write(libro.toString() + "\n");
-					else
-						System.out.println("Ocurrio un error al validar el libro");
-				}
-		      } else {
-		        System.out.println("Archivo ya existente.");
-		        FileWriter escribir = new FileWriter(catalogodeLibros);
-				for (Libro libro : catalogo) {
-					if(validaDatos(libro.toString() + "\n"))
-						escribir.write(libro.toString() + "\n");
-					else
-						System.out.println("Ocurrio un error al validar el libro");
-				}
-		      }
+				System.out.println("Archivo creado: " + catalogodeLibros.getName());
+			} else {
+				//Si el fichero ya se ha creado muestra un mensaje por
+				//consola diciendo que ya se ha creado
+				System.out.println("Archivo ya existente.");
+			}
+			//Creo un objeto FileWriter para poder escribir en el fichero que se pasa por parametro
+			FileWriter escribir = new FileWriter(catalogodeLibros);
+			//Recorro el catalogo
+			for(Libro libro : catalogo) {
+				//Para cada libro utilizo el metodo toString de la clase Libro
+				//para escribir en el catalogo con el formato que se nos pide
+				escribir.write(libro.toString());
+				escribir.write("\n");
+	    	}
+			escribir.close();
 		} catch (IOException e) {
-			System.out.println("Ocurrio un Error al crear el archivo");
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
 	private static void leerCatalogo(ArrayList<Libro> catalogo) {
 		Libro libro = null;
+		//Pregunto por el nombre del fichero a leer
 		System.out.println("Introduzca nombre del fichero a cargar");
-    	Scanner teclado = new Scanner(System.in);
+    	//Creo el Scanner para leer de consola
+		Scanner teclado = new Scanner(System.in);
+		//Leo de consola el nombre del fichero a leer
     	String nombref = teclado.nextLine();
-    	Scanner myReader = null;
-		try{
-			File catalogodeLibros = new File(System.getProperty("user.dir") + nombref);
-			try {
-				myReader = new Scanner(catalogodeLibros);
-				while (myReader.hasNextLine()) {
-					String line = myReader.next();
-					String[] datos = line.split(",");
-					String titulo = datos[0];
-			    	String isbn = datos[1];
-				    Genero genero = Genero.getGenero(datos[2]);
-				    String autor = datos[3];
-				    Integer paginas = Integer.parseInt(datos[4]);
-				    libro = new Libro(titulo,isbn,genero,autor,paginas);
-					catalogo.add(libro);
-					myReader.close();
-				}
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
+    	Scanner myReader;
+    	//Creo un objeto File con la direccion del fichero a leer que estÃ¡ en la
+    	//carpeta donde se ejecuta nuestro programa / y el nombre del fichero
+		File catalogodeLibros = new File(System.getProperty("user.dir") + "/" + nombref);
+		try {
+			//Creo un Scanner para leer el fichero que se le pasa por parametro
+			myReader = new Scanner(catalogodeLibros);
+			//Mientras el fichero tenga al menos una linea tras la ya leida
+			while (myReader.hasNextLine()) {
+				//Leo una a una las lineas del fichero a leer
+				String line = myReader.nextLine();
+				//Separo las cadenas por el caracter separador y lo guardo en un array
+				String[] datos = line.split(",");
+				//Convierto cada posicion del array al tipo de dato de los atributos de la clase libro
+				String titulo = datos[0];
+				String isbn = datos[1];
+			    Genero genero = Genero.getGenero(datos[2]);
+			    String autor = datos[3];
+			    Integer paginas = Integer.parseInt(datos[4]);
+			    //Una vez obtenidos todos los datos de cada libro creo cada libro con los datos obtenidos
+			    libro = new Libro(titulo,isbn,genero,autor,paginas);
+			    //AÃ±ado cada libro al catalogo
+				catalogo.add(libro);
 			}
-		} catch (Exception ex) {
-			System.out.println("Error: el fichero no se ha encontrado" + ex.getMessage());
-		} finally {
-    		try {
-    			if (myReader != null)
-    				myReader.close();
-    		} catch (Exception exception) {
-    			System.out.println("Mensaje 2: " + exception.getMessage());
-    		}
-    	}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private static void vaciarCatalogo(ArrayList<Libro> catalogo) { 
 		System.out.println("Borrar el catalogo");
+		//Vacio el catalogo
 		catalogo.clear();
 	}
 }
